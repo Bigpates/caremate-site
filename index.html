@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareMate Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fefefe;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    #chatbox {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      width: 100%;
+      max-width: 500px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007BFF;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #responseBox {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      background-color: #e8f0fe;
+      font-size: 16px;
+      min-height: 50px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>Chat with CareMate</h1>
+  <div id="chatbox">
+    <form id="chatForm">
+      <input type="text" id="userInput" placeholder="Ask something about NDIS..." required />
+      <button type="submit">Send</button>
+    </form>
+    <div id="responseBox"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("chatForm");
+    const userInput = document.getElementById("userInput");
+    const responseBox = document.getElementById("responseBox");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const message = userInput.value.trim();
+      if (!message) return;
+
+      responseBox.textContent = "Thinking...";
+
+      try {
+        const res = await fetch("https://caremate-ai-backend-ts67450.replit.app/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message })
+        });
+
+        if (!res.ok) throw new Error("Server error: " + res.status);
+        const data = await res.json();
+        responseBox.textContent = data.reply || "No response from CareMate.";
+      } catch (err) {
+        console.error("Fetch error:", err);
+        responseBox.textContent = "Something went wrong. Please try again.";
+      }
+    });
+  </script>
+</body>
+</html>
